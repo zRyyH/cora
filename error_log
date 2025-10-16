@@ -1,0 +1,5 @@
+[23-Jul-2024 10:42:01 America/Fortaleza] PHP Warning:  Undefined variable $nome in /home1/coraor37/public_html/mail.php on line 12
+[23-Jul-2024 10:42:01 America/Fortaleza] PHP Warning:  Undefined variable $email in /home1/coraor37/public_html/mail.php on line 12
+[23-Jul-2024 10:42:01 America/Fortaleza] PHP Warning:  Undefined variable $telefone in /home1/coraor37/public_html/mail.php on line 12
+[23-Jul-2024 10:42:01 America/Fortaleza] PHP Warning:  Undefined variable $mensagem in /home1/coraor37/public_html/mail.php on line 12
+[23-Jul-2024 10:42:01 America/Fortaleza] PHP Warning:  Undefined variable $email in /home1/coraor37/public_html/mail.php on line 14
