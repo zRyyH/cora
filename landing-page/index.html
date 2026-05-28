@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORA - Centro de Ortopedia e Reabilitação Animal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header-top">
+        <div class="header-info">
+            <a href="mailto:cora.ortopediavet@gmail.com"><i class="fas fa-envelope"></i>
+                <span>cora.ortopediavet@gmail.com</span></a>
+            <a href="https://www.google.com/maps/place/CORA+-+Centro+de+Ortopedia+e+Reabilita%C3%A7%C3%A3o+Animal/@-23.5817325,-46.6515005,18.75z/data=!4m6!3m5!1s0x94ce582addeebbd3:0xdc45f6d11dc157b5!8m2!3d-23.5816143!4d-46.6515161!16s%2Fg%2F11jh_t06p5?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D"
+                target="_blank"><i class="fas fa-map-marker-alt"></i> Rua Pirapora, 167 - Paraíso, São Paulo - SP</a>
+        </div>
+        <div class="social-header">
+            <a href="https://www.instagram.com/coraortopediavet/" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/coraortopediavet/" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://api.whatsapp.com/send?phone=5511972698589" target="_blank"><i
+                    class="fab fa-whatsapp"></i></a>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="logo_menu.svg" alt="CORA">
+                <div class="logo-subtitle">CENTRO DE ORTOPEDIA<br>& REABILITAÇÃO ANIMAL</div>
+            </div>
+
+            <div class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <nav id="nav">
+                <div class="nav-logo">
+                    <img src="logo_menu.svg" alt="CORA">
+                    <div class="nav-logo-subtitle">CENTRO DE ORTOPEDIA<br>& REABILITAÇÃO ANIMAL</div>
+                </div>
+
+                <ul class="nav-list">
+                    <li><a href="#quem somos">Quem Somos</a></li>
+                    <li class="dropdown-item">
+                        <a href="javascript:void(0);" onclick="toggleServicos()">
+                            Serviços <i class="fas fa-chevron-down" id="seta"></i>
+                        </a>
+                        <ul class="dropdown-vertical" id="lista-servicos">
+                            <li><a href="javascript:void(0);" onclick="goToAccordion(0)">Procedimentos Cirúrgicos</a>
+                            </li>
+                            <li><a href="javascript:void(0);" onclick="goToAccordion(1)"> Consultas </a></li>
+                            <li><a href="javascript:void(0);" onclick="goToAccordion(2)">Exames Complementares</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#depoimentos">Depoimentos</a></li>
+                </ul>
+            </nav>
+            <a href="#contato" class="btn-contato">Contato</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Ortopedia Veterinária</h1>
+            <p>Mobilidade É Liberdade Para Ser Feliz</p>
+            <a href="#sobre" class="btn-hero">Saber Mais <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <section class="experience-section">
+        <div class="container">
+            <section class="about-section" id="sobre">
+                <div class="container">
+                    <h2 class="section-title">Mais De 30 Anos De Experiência A Serviço Da Ortopedia Veterinária</h2>
+                    <div class="about-grid">
+                        <div class="decorative-arrow">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M85,10 C85,40 80,60 65,85" stroke="#00A8FF" stroke-width="2" fill="none"
+                                    stroke-linecap="round" />
+                                <path d="M65,85 L58,75 M65,85 L78,75" stroke="#00A8FF" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="about-image">
+                            <img src="segunda imagem.jpg" alt="Atendimento CORA">
+                        </div>
+                        <div class="about-text">
+                            <p><strong>O CORA</strong> nasceu do desejo de reunir tudo o que há de melhor em ortopedia
+                                veterinária: conhecimento, experiência, tecnologia e acolhimento. Fundado por
+                                profissionais com três décadas de atuação em ortopedia, o centro oferece um atendimento
+                                completo: da consulta ao tratamento cirúrgico, tudo em um só lugar.</p>
+                        </div>
+                        <div class="center-icon">
+                            <i class="fas fa-briefcase-medical"></i>
+                        </div>
+                        <div class="about-text">
+                            <p>Localizado na cidade de São Paulo (SP), nosso centro de ortopedia e reabilitação animal
+                                conta com uma equipe altamente especializada, que preza sempre pelo bem-estar e por
+                                aprimorar a qualidade da vida dos pacientes.</p>
+                        </div>
+                        <div class="about-image">
+                            <img src="terceira imagem.jpg" alt="Equipe CORA">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">+30</div>
+                    <div class="stat-label">Anos de experiências</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">+7mil</div>
+                    <div class="stat-label">Pacientes atendidos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">+2mil</div>
+                    <div class="stat-label">Exames realizados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">+9mil</div>
+                    <div class="stat-label">Pacientes reabilitados</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials-section" id="depoimentos">
+        <div class="container">
+            <h2 class="section-title">Depoimentos</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">Ótimos profissionais, a Dra. Cris realizou o tratamento da minha
+                        cachorrinha e foi um sucesso! Recomendo muito ❤️</p>
+                    <div class="testimonial-author">
+                        <div class="author-image">
+                            <img src="Luiza Rosa.png" alt="Laiza Rosa">
+                        </div>
+                        <div class="author-info">
+                            <h4>Laiza Rosa</h4>
+                            <p>Cliente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">Recomendo enormemente! Meu cachorrinho teve uma ruptura de ligamento e
+                        ele se tratou com a Dra. Ana Luisa e equipe. O atendimento foi incrível desde o cuidado com ele,
+                        técnica, mas ainda mais pela delicadeza, forma de tratar o tutor, respeito. Equipe nota 10! E
+                        não posso deixar de deixar um especial reconhecimento à Cleide que é super atenciosa!</p>
+                    <div class="testimonial-author">
+                        <div class="author-image">
+                            <img src="Carol Trancucci.png" alt="Carol Trancucci">
+                        </div>
+                        <div class="author-info">
+                            <h4>Carol Trancucci</h4>
+                            <p>Cliente</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="stars">★★★★★</div>
+                    <p class="testimonial-text">Meu cachorrinho sofreu um acidente e precisou de atendimento imediato.
+                        As Dras. Ana Luiza e Cristiane foram maravilhosas e a cirurgia do meu Pet foi perfeita! Ele se
+                        recuperou super bem e não teve sequelas, graças a Deus! Atendimento humanizado, sério e
+                        competente. Equipe nota 10!!!</p>
+                    <div class="testimonial-author">
+                        <div class="author-image">
+                            <img src="Viviane Friedemann.png" alt="Viviane Friedemann">
+                        </div>
+                        <div class="author-info">
+                            <h4>Viviane Friedemann</h4>
+                            <p>Cliente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="solutions-section" id="soluções">
+        <div class="container">
+            <h2 class="section-title">Soluções Ortopédicas Completas<br>Para Seu Pet</h2>
+
+            <div class="accordion">
+                <div class="accordion-item active" onclick="toggleAccordion(this)">
+                    Procedimentos Cirúrgicos Ortopédicos...
+                    <span class="icon">−</span>
+                </div>
+                <div class="accordion-content" style="display: block;">
+                    <ul>
+                        <li><a href="https://ip.coraortopediavet.com.br/fraturasLuxacoes.html">Fraturas e Luxações</a>
+                        </li>
+                        <li><a href="https://ip.coraortopediavet.com.br/rupturaLigamento.html">Ruptura de Ligamento</a>
+                        </li>
+                        <li><a href="https://ip.coraortopediavet.com.br/tplo.html">TPLO (Osteotomia de Nivelamento do
+                                Platô Tibial)</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/displasiaCoxofemoral.html">Displasia
+                                Coxofemoral</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/proteseQuadril.html">Prótese de Quadril</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/luxacaoPatela.html">Luxação de Patela</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/herniaDisco.html">Hérnia de Disco</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/sindromeCaudaEquina.html">Síndrome da Cauda
+                                Equina</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/displasiaCotovelo.html">Displasia da
+                                Cotovelo</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/osteocondrose.html">Osteocondrose/Osteocondrite
+                                Dissecante</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/lesoesTecidosMoles.html">Lesões de Tecidos
+                                Moles</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/emergencias.html">Emergências/Urgências na
+                                Ortopedia Veterinária – Coluna / Articular / Filhote</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/celulasTronco.html">Células-Tronco</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/acidoHialuronico.html">Infiltração de Ácido
+                                Hialurônico</a></li>
+                        <li><a href="https://ip.coraortopediavet.com.br/shockWave.html">Shock Wave (Ondas de Choque)</a>
+                        </li>
+                        <li><a href="https://ip.coraortopediavet.com.br/nutrologia.html">Nutrologia</a></li>
+                    </ul>
+                </div>
+
+                <div class="accordion-item" onclick="toggleAccordion(this)">
+                    Consultas
+                    <span class="icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Detalhes sobre consultas aqui.</p>
+                </div>
+
+                <div class="accordion-item" onclick="toggleAccordion(this)">
+                    Exames Complementares
+                    <span class="icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Detalhes sobre consultas aqui.</p>
+                </div>
+            </div>
+
+            <div class="contact-btn">
+                <a href="#contato" class="btn-primary">Entrar Em Contato</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="differentials-section" id="diferenciais">
+        <div class="container">
+            <h2 class="section-title">Nossos Diferenciais</h2>
+            <div class="differentials-content">
+                <div class="differentials-image">
+                    <img src="_DRI4603.jpg" alt="CORA Equipe Cirúrgica">
+                </div>
+                <div class="differentials-text">
+                    <h3>Por que escolher o CORA?</h3>
+                    <p>No <strong>CORA</strong>, cada paciente é tratado como único. Aqui, você encontra
+                        <strong>conhecimento especializado</strong>, empatia no atendimento e resultados que transformam
+                        vidas.
+                    </p>
+                    <ul class="differentials-list">
+                        <li>Equipe Especializada e Atualizada</li>
+                        <li>Tratamento Individualizado e Acolhedor</li>
+                        <li>Acompanhamento Ativo do Paciente</li>
+                        <li>Estrutura Completa e de Ponta</li>
+                        <li>Diagnóstico Preciso e Rápido</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="clinic-section" id="clinicas">
+        <div class="container">
+            <h2 class="section-title">Nossa Clínica</h2>
+            <div class="clinic-gallery">
+                <img src="05.jpg" alt="Clínica 1">
+                <img src="04.jpg" alt="Clínica 2">
+                <img src="06.jpg" alt="Clínica 3">
+                <img src="02.jpg" alt="Clínica 4">
+                <img src="WhatsApp Image 2026-01-07 at 16.40.18 (4).jpeg" alt="Clínica 5">
+                <img src="WhatsApp Image 2026-01-07 at 16.40.18 (1).jpeg" alt="Clínica 6">
+                <img src="WhatsApp Image 2026-01-07 at 16.40.18 (2).jpeg" alt="Clínica 7">
+                <img src="WhatsApp Image 2026-01-07 at 16.40.18 (3).jpeg" alt="Clínica 8">
+            </div>
+        </div>
+    </section>
+
+    <section class="team-section" id="quem somos">
+        <div class="container">
+            <h2 class="section-title">Quem Cuida Do Seu Pet</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="Foto Gi.jpg" alt="Dra. Giovanna Biase">
+                    </div>
+                    <div class="team-info">
+                        <h3>DRA. GIOVANNA BIASE</h3>
+                        <div class="crmv">CRMV-SP 29.859</div>
+                        <p>Graduada em Medicina Veterinária pela PUC Minas, com residência em Cirurgia de Pequenos
+                            Animais pela UNIFOB e especialização em Ortopedia Veterinária pela Anclivepa-SP. Certificada
+                            nos cursos AO Vet Avançado e Master, é pioneira como a primeira mulher no Brasil habilitada
+                            em prótese de quadril veterinária. Credenciada no uso de células-tronco e em constante
+                            atualização, destaca-se pela excelência e inovação em cirurgia geral e ortopedia
+                            veterinária.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="Foto Ana.jpg" alt="Dra. Ana Luiza Chierichetti">
+                    </div>
+                    <div class="team-info">
+                        <h3>DRA. ANA LUIZA CHIERICHETTI</h3>
+                        <div class="crmv">CRMV-SP 9.137</div>
+                        <p>Graduada em Medicina Veterinária pela UNESP – Botucatu, com residência em Cirurgia de
+                            Pequenos Animais pela UNESP – Jaboticabal e mestrado pela USP, com ênfase em Ortopedia.
+                            Certificada nos cursos AO Vet Avançado e Master, mantém constante atualização em congressos
+                            e cursos de cirurgia geral e ortopedia, no Brasil e no Exterior. Sua trajetória reflete
+                            dedicação à excelência e inovação na área veterinária, destacando-se como referência em
+                            cirurgia e ortopedia de pequenos animais.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="Foto Cris.jpg" alt="Dra. Cristiane Challoub">
+                    </div>
+                    <div class="team-info">
+                        <h3>DRA. CRISTIANE CHALLOUB</h3>
+                        <div class="crmv">CRMV-SP 57.212</div>
+                        <p>Graduada em Medicina Veterinária pelo Centro Universitário São Judas – Campus Unimonte, com
+                            extensão em Técnica Cirúrgica em Cães e Gatos pelo CETACVET. Possui aprimoramento em Clínica
+                            e Cirurgia Ortopédica pelo CORA e atualmente é pós-graduanda em Nutrologia Veterinária pelo
+                            IRP Ranvier.</p>
+                        <p>Sua formação combina especialização e constante busca por aperfeiçoamento, refletindo
+                            dedicação e excelência na prática veterinária.</p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="Foto Adilson.jpg" alt="Adilson Junior">
+                    </div>
+                    <div class="team-info">
+                        <h3>ADILSON JUNIOR</h3>
+                        <div class="crmv">Veterinário</div>
+                        <p>Trainee em Ortopedia</p>
+                        <p>Pós graduando em radiologia veterinária</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="transformation-section">
+        <div class="container">
+            <div class="transformation-content">
+                <div class="transformation-text">
+                    <h2>Mais Do Que Tratamento:<br>Transformação De Vida</h2>
+                    <p>Não vendemos procedimentos. Vendemos a liberdade do seu pet subir no sofá de novo. De brincar. De
+                        ser feliz. E você, tutor, vive essa jornada conosco com suporte, informação e carinho.</p>
+                    <ul class="transformation-list">
+                        <li>Melhor qualidade de vida para seu pet</li>
+                        <li>Alívio emocional para você, tutor</li>
+                        <li>Redução de custos com recorrências e agravamentos</li>
+                        <li>Confiança em um time de especialistas apaixonados pelo que fazem</li>
+                    </ul>
+                    <a href="#contato" class="btn-primary">Entrar Em Contato <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="transformation-image">
+                    <img src="DSC03997.jpg" alt="Transformação de Vida">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="success-section">
+        <div class="container">
+            <h2 class="section-title">Cases De Sucesso</h2>
+            <div class="success-gallery">
+                <div class="success-item">
+                    <video controls>
+                        <source src="cora_benta_dra_ana.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                </div>
+                <div class="success-item">
+                    <video controls>
+                        <source src="cora_pepe_dra_giovanna.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                </div>
+                <div class="success-item">
+                    <video controls>
+                        <source src="cora_perola_dra_giovanna.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeos.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="container">
+            <h2 class="section-title">Dúvidas Frequentes</h2>
+            <div class="accordion">
+                <div class="accordion-item active" onclick="toggleAccordion(this)">
+                    Horários de atendimento
+                    <span class="icon">−</span>
+                </div>
+                <div class="accordion-content" style="display: block;">
+                    <p>Segunda a sexta-feira, das 8h30 às 17h30.</p>
+                </div>
+
+                <div class="accordion-item" onclick="toggleAccordion(this)">
+                    Como agendar uma consulta?
+                    <span class="icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Entre em contato pelo WhatsApp ou telefone (11) 97269-8589.</p>
+                </div>
+
+                <div class="accordion-item" onclick="toggleAccordion(this)">
+                    Onde estão localizados?
+                    <span class="icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Rua Pirapora, 167 - Paraíso, São Paulo - SP.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section" id="contato">
+        <div class="container">
+            <h2 class="section-title">Entre Em Contato</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>(11) 97269-8589</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>contato@coraortopediavet.com.br</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Atendimento: Segunda a sexta, das 8h30 às 17h30</span>
+                        </div>
+                    </div>
+                    <div class="contact-map">
+                    </div>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-map">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d228.53957773399912!2d-46.65156236810551!3d-23.581612149056742!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce582addeebbd3%3A0xdc45f6d11dc157b5!2sCORA%20-%20Centro%20de%20Ortopedia%20e%20Reabilita%C3%A7%C3%A3o%20Animal!5e0!3m2!1spt-BR!2sbr!4v1767988080914!5m2!1spt-BR!2sbr"
+                            width="370" height="250" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo-section">
+                    <img src="logo_menu.svg" alt="CORA">
+                    <div class="footer-logo-text">CENTRO DE ORTOPEDIA<br>& REABILITAÇÃO ANIMAL</div>
+                    <div class="footer-social">
+                        <a href="https://api.whatsapp.com/send?phone=5511972698589" target="_blank"><i
+                                class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.facebook.com/coraortopediavet/" target="_blank"><i
+                                class="fab fa-instagram"></i></a>
+                        <a href="https://www.instagram.com/coraortopediavet/" target="_blank"><i
+                                class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Links Rápido</h4>
+                        <ul>
+                            <li><a href="#nav">Home</a></li>
+                            <li><a href="#soluções">Serviços</a></li>
+                            <li><a href="#quem somos">Quem Somos</a></li>
+                            <li><a href="#contato">Contato</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Social</h4>
+                        <ul>
+                            <li><a href="https://www.facebook.com/coraortopediavet/" target="_blank">Facebook</a></li>
+                            <li><a href="https://www.instagram.com/coraortopediavet/" target="_blank">Instagram</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-address">
+                    <h4>Endereço</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> Rua Pirapora, 167 -<br>Paraíso, São Paulo - SP</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>©Cora Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
