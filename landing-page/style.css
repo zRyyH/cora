@@ -1197,6 +1197,45 @@ nav ul li.dropdown {
     }
 }
 
+/* Botão flutuante WhatsApp */
+#menu-vertical {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    right: 25px;
+    top: 90%;
+    transform: translateY(-50%);
+    z-index: 1030;
+    border: none;
+    background-color: #25d366;
+    border-radius: 100%;
+    transition: .3s ease-in-out;
+    width: 60px;
+    height: 60px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#menu-vertical:hover {
+    background-color: #128C7E;
+}
+
+#whats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    transition: .3s ease-in-out;
+    border: none;
+    color: #ffffff;
+    font-size: 30px;
+    background-color: transparent;
+    text-decoration: none;
+}
+
 @media (min-width: 769px) {
     .dropdown-pure .dropdown-list {
         position: absolute;
