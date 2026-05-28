@@ -1,0 +1,114 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag to roll back to (ex: v1.0.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: dentelli/aurora-nest
+
+jobs:
+  rollback:
+    name: Roll back to ${{ inputs.tag }}
+    runs-on: ubuntu-latest
+    # No `environment: production` here on purpose: rollback is an emergency
+    # path and must stay dispatchable from `main` without going through the
+    # tag-only deploy policy that gates the Release workflow.
+    timeout-minutes: 10
+    steps:
+      - name: Validate tag format
+        run: |
+          if ! [[ "${{ inputs.tag }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag '${{ inputs.tag }}' must match v*.*.*"
+            exit 1
+          fi
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify image exists in GHCR
+        run: |
+          docker manifest inspect \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ inputs.tag }} > /dev/null
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust server host key
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "${SSH_PORT}" -t ed25519,rsa "${SSH_HOST}" \
+            >> ~/.ssh/known_hosts 2>/dev/null
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Switch server to target tag
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          IMAGE_TAG: ${{ inputs.tag }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            bash -s -- "$DEPLOY_PATH" "$IMAGE_TAG" "$GHCR_USER" "$GHCR_TOKEN" <<'REMOTE'
+          set -euo pipefail
+          DEPLOY_PATH=$1; IMAGE_TAG=$2; GHCR_USER=$3; GHCR_TOKEN=$4
+          cd "$DEPLOY_PATH"
+          if [[ -f .env ]]; then
+            grep -E '^IMAGE_TAG=' .env > .env.previous || true
+          fi
+          if [[ -f .env ]] && grep -qE '^IMAGE_TAG=' .env; then
+            sed -i "s|^IMAGE_TAG=.*|IMAGE_TAG=${IMAGE_TAG}|" .env
+          else
+            printf 'IMAGE_TAG=%s\n' "$IMAGE_TAG" >> .env
+          fi
+          printf '%s\n' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          docker compose pull
+          docker compose up -d --remove-orphans
+          docker logout ghcr.io || true
+          REMOTE
+
+      - name: Wait for healthcheck
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" bash -s <<'REMOTE'
+          set -euo pipefail
+          for i in $(seq 1 40); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' aurora-nest 2>/dev/null || echo "missing")
+            echo "[$i/40] health=${STATUS}"
+            if [[ "$STATUS" == "healthy" ]]; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::container did not reach healthy state after rollback"
+          exit 1
+          REMOTE

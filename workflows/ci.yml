@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, Typecheck, Build, Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
+
+  integration:
+    name: Integration tests (Postgres testcontainer)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # GitHub-hosted runners have Docker installed; integration tests spin up
+    # a Postgres container via testcontainers in globalSetup. Keep this job
+    # separate from `verify` so a Docker hiccup doesn't mask lint/build/unit
+    # failures.
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Integration tests
+        run: npm run test:int
+        env:
+          # Suite mints its own JWT/seeds; provide stable secrets so the
+          # AuthService.onModuleInit bootstrap doesn't crash on missing env.
+          JWT_SECRET: ci-integration-jwt-secret-do-not-deploy
+          ROOT_LOGIN: integration-root
+          ROOT_EMAIL: root@integration.test
+          ROOT_PASSWORD: integration-pass-123
+          ROOT_NOME: Integration Root
+          # Bump throttle for the high-volume test suite.
+          THROTTLE_LIMIT: '10000'
+          THROTTLE_TTL: '60000'

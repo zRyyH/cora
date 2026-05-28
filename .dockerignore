@@ -1,0 +1,16 @@
+.git
+.gitignore
+.github
+.vscode
+.idea
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# arquivos PHP nao usados (site usa EmailJS no client-side)
+**/_*.php
+**/file.php
+**/debug.log
+**/error_log
+**/*.tmp

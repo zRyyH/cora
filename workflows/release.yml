@@ -1,0 +1,233 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+  deployments: write
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: dentelli/aurora-nest
+
+jobs:
+  release:
+    name: Build, push, deploy
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create GitHub deployment
+        id: create_deployment
+        uses: actions/github-script@v9
+        with:
+          result-encoding: string
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.ref,
+              environment: 'production',
+              required_contexts: [],
+              auto_merge: false,
+              description: `Deploy ${tag}`,
+            });
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'in_progress',
+              log_url: runUrl,
+              description: 'Build & deploy in progress',
+            });
+            return deployment.data.id;
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tags
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest
+            type=sha,format=short,prefix=sha-
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust server host key
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan -p "${SSH_PORT}" -t ed25519,rsa "${SSH_HOST}" \
+            >> ~/.ssh/known_hosts 2>/dev/null
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Sync compose.yml + rollback.sh to server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          rsync -avz -e "ssh -p ${SSH_PORT}" \
+            compose.yml scripts/rollback.sh \
+            "${SSH_USER}@${SSH_HOST}:${DEPLOY_PATH}/"
+          ssh -p "${SSH_PORT}" "${SSH_USER}@${SSH_HOST}" \
+            "chmod +x ${DEPLOY_PATH}/rollback.sh"
+
+      - name: Snapshot current IMAGE_TAG for rollback
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -p "${SSH_PORT}" "${SSH_USER}@${SSH_HOST}" \
+            bash -s -- "${DEPLOY_PATH}" <<'REMOTE'
+          set -euo pipefail
+          DEPLOY_PATH=$1
+          cd "$DEPLOY_PATH"
+          if [[ -f .env ]]; then
+            # Preserve only the IMAGE_TAG line as the rollback target. Secrets
+            # in .env (DB_PASSWORD, JWT_SECRET, …) stay untouched in the live
+            # .env and are NOT copied around by deploy/rollback flows.
+            grep -E '^IMAGE_TAG=' .env > .env.previous || true
+            echo "snapshot: $(cat .env.previous 2>/dev/null || echo none)"
+          else
+            echo "snapshot: no prior .env (first deploy)"
+          fi
+          REMOTE
+
+      - name: Deploy on server
+        id: deploy
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          IMAGE_TAG: ${{ github.ref_name }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            bash -s -- "$DEPLOY_PATH" "$IMAGE_TAG" "$GHCR_USER" "$GHCR_TOKEN" <<'REMOTE'
+          set -euo pipefail
+          DEPLOY_PATH=$1; IMAGE_TAG=$2; GHCR_USER=$3; GHCR_TOKEN=$4
+          cd "$DEPLOY_PATH"
+          # Update or append IMAGE_TAG without clobbering app secrets in .env.
+          if [[ -f .env ]] && grep -qE '^IMAGE_TAG=' .env; then
+            sed -i "s|^IMAGE_TAG=.*|IMAGE_TAG=${IMAGE_TAG}|" .env
+          else
+            printf 'IMAGE_TAG=%s\n' "$IMAGE_TAG" >> .env
+          fi
+          printf '%s\n' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          docker compose pull
+          docker compose up -d --remove-orphans
+          docker logout ghcr.io || true
+          REMOTE
+
+      - name: Wait for healthcheck
+        id: health
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            bash -s -- "$DEPLOY_PATH" <<'REMOTE'
+          set -euo pipefail
+          DEPLOY_PATH=$1
+          cd "$DEPLOY_PATH"
+          for i in $(seq 1 40); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' aurora-nest 2>/dev/null || echo "missing")
+            echo "[$i/40] health=${STATUS}"
+            if [[ "$STATUS" == "healthy" ]]; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "::error::container did not reach healthy state"
+          docker compose logs --tail=120 nest || true
+          exit 1
+          REMOTE
+
+      - name: Auto-rollback on failure
+        if: failure() && steps.deploy.outcome == 'success' && steps.health.outcome == 'failure'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          echo "::warning::deploy unhealthy — auto-rolling back"
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "cd ${DEPLOY_PATH} && ./rollback.sh"
+
+      - name: Mark deployment success
+        if: success() && steps.create_deployment.outputs.result
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.create_deployment.outputs.result }},
+              state: 'success',
+              log_url: runUrl,
+              description: 'Deployed successfully',
+            });
+
+      - name: Mark deployment failure
+        if: failure() && steps.create_deployment.outputs.result
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: ${{ steps.create_deployment.outputs.result }},
+              state: 'failure',
+              log_url: runUrl,
+              description: 'Deploy failed — check workflow logs',
+            });
