@@ -1,22 +1,19 @@
 services:
   landing-page:
     image: ghcr.io/${REGISTRY_OWNER:-zryyh}/cora-landing-page:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      args:
-        SITE_DIR: landing-page
     container_name: cora-landing-page
-    ports:
-      - "8080:80"
     restart: unless-stopped
+    networks:
+      - npm-proxy
 
   site-institucional:
     image: ghcr.io/${REGISTRY_OWNER:-zryyh}/cora-site-institucional:${IMAGE_TAG:-latest}
-    build:
-      context: .
-      args:
-        SITE_DIR: site-institucional
     container_name: cora-site-institucional
-    ports:
-      - "8081:80"
     restart: unless-stopped
+    networks:
+      - npm-proxy
+
+networks:
+  npm-proxy:
+    external: true
+    name: npm-proxy
